@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "53111542364",
+    "project_id": "dwaiinow",
+    "storage_bucket": "dwaiinow.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53111542364:android:af26f75104bde8552e8c99",
+        "android_client_info": {
+          "package_name": "com.example.dwaiinow"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-ZP19yYGVttblOQVEv73DBvsZzN84Ink"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
