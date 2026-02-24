@@ -88,6 +88,7 @@ class WelcomeScreen extends StatelessWidget {
                       style: GoogleFonts.cairo(
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w400,
+                        // ignore: deprecated_member_use
                         color: Colors.white.withOpacity(0.9),
                       ),
                       textAlign: TextAlign.center,

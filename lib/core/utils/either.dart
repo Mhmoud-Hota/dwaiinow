@@ -15,9 +15,9 @@ class Either<L, R> {
 
   T fold<T>(T Function(L) onLeft, T Function(R) onRight) {
     if (isLeft) {
-      return onLeft(left!);
+      return onLeft(left as L);
     } else {
-      return onRight(right!);
+      return onRight(right as R);
     }
   }
 }
