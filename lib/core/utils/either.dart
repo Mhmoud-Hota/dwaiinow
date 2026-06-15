@@ -1,3 +1,4 @@
+//lib/core/utils/either.dart
 class Either<L, R> {
   final L? left;
   final R? right;

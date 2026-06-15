@@ -1,9 +1,9 @@
 //lib/features/auth/data/repositories/auth_repository_impl.dart
 import 'package:dawai_app/core/services/auth_service.dart';
-import '../../domain/entities/user_entity.dart';
-import '../../domain/repositories/auth_repository.dart';
-import '../models/user_model.dart';
-import '../../../../core/services/storage_service.dart'; // أضف هذا الاستيراد
+import 'package:dawai_app/features/auth/domain/entities/user_entity.dart';
+import 'package:dawai_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:dawai_app/features/auth/data/models/user_model.dart';
+import 'package:dawai_app/core/services/storage_service.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthService _authService;
@@ -21,10 +21,7 @@ class AuthRepositoryImpl implements AuthRepository {
       phoneNumber: phoneNumber,
       password: password,
     );
-    
-    // Save user locally
     await _storageService.saveUser(user);
-    
     return user;
   }
 
@@ -34,7 +31,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String phoneNumber,
     required String password,
     String? address,
-    String? profileImageUrl,  // تأكد من الاسم
+    String? profileImageUrl,
   }) async {
     final user = await _authService.registerWithPhoneAndPassword(
       name: name,
@@ -43,14 +40,9 @@ class AuthRepositoryImpl implements AuthRepository {
       address: address,
       profileImageUrl: profileImageUrl,
     );
-    
-    // Save user locally
     await _storageService.saveUser(user);
-    
     return user;
   }
-
- 
 
   @override
   Future<void> updateProfile({
@@ -65,8 +57,7 @@ class AuthRepositoryImpl implements AuthRepository {
       address: address,
       profileImageUrl: profileImageUrl,
     );
-    
-    // Update local storage
+
     final currentUser = await _storageService.getUser();
     if (currentUser != null) {
       await _storageService.saveUser(UserModel(
@@ -82,17 +73,13 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   UserEntity? getCurrentUser() {
-    final firebaseUser = _authService.getCurrentUser();
-    if (firebaseUser == null) return null;
-    
-    // Get from local storage
-    final localUser = _storageService.getUserSync();
-    return localUser;
+    // من التخزين المحلي مباشرة (سريع)
+    return _storageService.getUserSync();
   }
-  
+
   @override
-  Future<void> logout() {
-    // TODO: implement logout
-    throw UnimplementedError();
+  Future<void> logout() async {
+    await _authService.logout();
+    await _storageService.clearUser();
   }
 }

@@ -6,7 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 import 'core/di/service_locator.dart' as di;
 import 'config/routes/app_router.dart';
-import 'features/welcome/presentation/cubit/welcome_cubit.dart';
+import 'features/welcome/presentation/cubit/welcome_cubit.dart'; 
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/home/presentation/cubit/home_cubit.dart';
 import 'firebase_options.dart';

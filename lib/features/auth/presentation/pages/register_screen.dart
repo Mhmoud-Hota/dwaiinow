@@ -1,4 +1,7 @@
 //lib/features/auth/presentation/pages/register_screen.dart
+import 'dart:io';
+
+import 'package:dawai_app/core/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -20,9 +23,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  
+
   String? _profileImagePath;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -40,7 +44,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    
+
     if (pickedFile != null) {
       setState(() {
         _profileImagePath = pickedFile.path;
@@ -61,14 +65,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       }
 
       context.read<AuthCubit>().register(
-        name: _nameController.text,
-        phoneNumber: _phoneController.text,
-        password: _passwordController.text,
-        address: _addressController.text.isNotEmpty 
-            ? _addressController.text 
-            : null,
-        profileImageUrl: _profileImagePath,  // غير الاسم هنا
-      );
+            name: _nameController.text,
+            phoneNumber: _phoneController.text,
+            password: _passwordController.text,
+            address: _addressController.text.isNotEmpty
+                ? _addressController.text
+                : null,
+            profileImageUrl: _profileImagePath, // غير الاسم هنا
+          );
     }
   }
 
@@ -135,9 +139,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       child: _profileImagePath != null
                           ? ClipOval(
-                              child: Image.asset(
-                                _profileImagePath!,
+                              child: Image.file(
+                                File(_profileImagePath!),
                                 fit: BoxFit.cover,
+                                width: 120.w,
+                                height: 120.w,
                               ),
                             )
                           : Column(
@@ -160,13 +166,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                     ),
                   ),
-                  
+
                   SizedBox(height: 32.h),
-                  
+
                   // حقل الاسم
-                  _buildTextField(
+                  AppTextField(
                     controller: _nameController,
-                    label: 'الاسم الكامل',
+                    hint: 'الاسم الكامل',
                     icon: Icons.person_outline,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -175,13 +181,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ),
-                  
+
                   SizedBox(height: 20.h),
-                  
+
                   // حقل رقم الهاتف
-                  _buildTextField(
+                  AppTextField(
                     controller: _phoneController,
-                    label: 'رقم الهاتف',
+                    hint: 'رقم الهاتف',
                     icon: Icons.phone_android,
                     keyboardType: TextInputType.phone,
                     validator: (value) {
@@ -194,21 +200,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ),
-                  
+
                   SizedBox(height: 20.h),
-                  
+
                   // حقل كلمة المرور
-                  _buildTextField(
+                  AppTextField(
                     controller: _passwordController,
-                    label: 'كلمة المرور',
+                    hint: 'كلمة المرور',
                     icon: Icons.lock_outline,
-                    obscureText: _obscurePassword,
+                    isPassword: _obscurePassword,
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword 
-                            ? Icons.visibility_off 
+                        _obscurePassword
+                            ? Icons.visibility_off
                             : Icons.visibility,
-                        color: Colors.grey[600],
+                        color: const Color(0xFF546E7A),
                       ),
                       onPressed: () {
                         setState(() {
@@ -226,21 +232,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ),
-                  
+
                   SizedBox(height: 20.h),
-                  
+
                   // تأكيد كلمة المرور
-                  _buildTextField(
+                  AppTextField(
                     controller: _confirmPasswordController,
-                    label: 'تأكيد كلمة المرور',
+                    hint: 'تأكيد كلمة المرور',
                     icon: Icons.lock_outline,
-                    obscureText: _obscureConfirmPassword,
+                    isPassword: _obscureConfirmPassword,
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscureConfirmPassword 
-                            ? Icons.visibility_off 
+                        _obscureConfirmPassword
+                            ? Icons.visibility_off
                             : Icons.visibility,
-                        color: Colors.grey[600],
+                        color: const Color(0xFF546E7A),
                       ),
                       onPressed: () {
                         setState(() {
@@ -255,18 +261,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       return null;
                     },
                   ),
-                  
+
                   SizedBox(height: 20.h),
-                  
+
                   // حقل العنوان (اختياري)
-                  _buildTextField(
+                  AppTextField(
                     controller: _addressController,
-                    label: 'العنوان (اختياري)',
+                    hint: 'العنوان (اختياري)',
                     icon: Icons.location_on_outlined,
                   ),
-                  
+
                   SizedBox(height: 40.h),
-                  
+
                   // زر التسجيل
                   SizedBox(
                     width: double.infinity,
@@ -291,9 +297,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                     ),
                   ),
-                  
+
                   SizedBox(height: 20.h),
-                  
+
                   // رابط تسجيل الدخول
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -319,35 +325,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    TextInputType keyboardType = TextInputType.text,
-    bool obscureText = false,
-    Widget? suffixIcon,
-    String? Function(String?)? validator,
-  }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscureText,
-      keyboardType: keyboardType,
-      textAlign: TextAlign.right,
-      validator: validator,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: GoogleFonts.cairo(color: Colors.grey[600]),
-        prefixIcon: Icon(icon, color: Colors.grey[600]),
-        suffixIcon: suffixIcon,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: Colors.grey),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12.r),
-          borderSide: const BorderSide(color: Color(0xFF0E8F84)),
-        ),
-      ),
-    );
-  }
 }

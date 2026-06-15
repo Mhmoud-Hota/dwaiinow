@@ -1,71 +1,104 @@
 //lib/features/auth/presentation/cubit/auth_cubit.dart
-import 'package:dawai_app/features/auth/domain/entities/user_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dawai_app/features/auth/domain/usecases/login_usecase.dart';
 import 'package:dawai_app/features/auth/domain/usecases/register_usecase.dart';
+import 'package:dawai_app/features/auth/domain/entities/user_entity.dart';
 
 part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  final LoginUseCase _loginUseCase;
   final RegisterUseCase _registerUseCase;
 
   AuthCubit({
     required LoginUseCase loginUseCase,
     required RegisterUseCase registerUseCase,
-  })  : _loginUseCase = loginUseCase,
-        _registerUseCase = registerUseCase,
+  })  : _registerUseCase = registerUseCase,
         super(AuthInitial());
 
-  // تسجيل الدخول برقم الهاتف وكلمة المرور
-  Future<void> login(String phone, String password) async {
-    if (phone.isEmpty || password.isEmpty) {
-      emit(AuthError('يرجى إدخال رقم الهاتف وكلمة المرور'));
-      return;
-    }
-    emit(AuthLoading());
-    try {
-      final user = await _loginUseCase(phone, password);
-      emit(AuthSuccess(user)); // تأكد من استخدام الحالة الصحيحة المتوقعة في UI
-    } catch (e) {
-      emit(AuthError(e.toString().replaceAll('Exception: ', '')));
-    }
+  String? _validatePassword(String password) {
+    if (password.trim().isEmpty) return 'يرجى إدخال كلمة المرور';
+    if (password.length < 6) return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+    // اختياري:
+    // if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d).{6,}$').hasMatch(password)) {
+    //   return 'كلمة المرور يجب أن تحتوي على حرف ورقم على الأقل';
+    // }
+    return null;
   }
 
-  // إنشاء حساب جديد
+  // Future<void> login(String phone, String password) async {
+  //   if (phone.trim().isEmpty) {
+  //     emit(AuthError('يرجى إدخال رقم الهاتف'));
+  //     return;
+  //   }
+  //   final passError = _validatePassword(password);
+  //   if (passError != null) {
+  //     emit(AuthError(passError));
+  //     return;
+  //   }
+  //   emit(AuthLoading());
+  //   try {
+  //     final user = await _loginUseCase(phone.trim(), password);
+  //     emit(AuthSuccess(user));
+  //   } catch (e) {
+  //     emit(AuthError(e.toString().replaceAll('Exception: ', '')));
+  //   }
+  // }
+Future<void> login(String phone, String password) async {
+  if (phone.trim().isEmpty) {
+    emit(AuthError('يرجى إدخال رقم الهاتف'));
+    return;
+  }
+
+  final passError = _validatePassword(password);
+  if (passError != null) {
+    emit(AuthError(passError));
+    return;
+  }
+
+  emit(AuthLoading());
+
+  await Future.delayed(const Duration(seconds: 1));
+
+  final user = UserEntity(
+    id: '1',
+    name: 'مستخدم تجريبي',
+    phoneNumber: phone.trim(),
+    address: 'محلي',
+    profileImageUrl: null, createdAt: DateTime(DateTime.april),
+  );
+
+  emit(AuthSuccess(user));
+}
   Future<void> register({
     required String name,
     required String phoneNumber,
     required String password,
     String? address,
-    String? profileImageUrl, // غير الاسم هنا فقط
+    String? profileImageUrl,
   }) async {
-    // التحقق من صحة البيانات
-    if (name.isEmpty || phoneNumber.isEmpty || password.isEmpty) {
+    if (name.trim().isEmpty || phoneNumber.trim().isEmpty) {
       emit(AuthError('يرجى إدخال البيانات المطلوبة'));
       return;
     }
 
-    emit(AuthLoading());
+    final passError = _validatePassword(password);
+    if (passError != null) {
+      emit(AuthError(passError));
+      return;
+    }
 
+    emit(AuthLoading());
     try {
       final user = await _registerUseCase(
-        name: name,
-        phoneNumber: phoneNumber,
+        name: name.trim(),
+        phoneNumber: phoneNumber.trim(),
         password: password,
         address: address,
-        profileImageUrl: profileImageUrl, // غير هنا أيضاً
+        profileImageUrl: profileImageUrl,
       );
       emit(AuthRegisterSuccess(user));
     } catch (e) {
-      emit(AuthError(e.toString()));
+      emit(AuthError(e.toString().replaceAll('Exception: ', '')));
     }
   }
-
-  // إعادة تعيين الحالة
-  void resetState() {
-    emit(AuthInitial());
-  }
-
-  void verifyOtp({required String verificationId, required String otpCode}) {}
 }

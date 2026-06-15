@@ -5,14 +5,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import 'cubit/pharmacy_cubit.dart';
-
 class PharmacyResultsScreen extends StatelessWidget {
-  const PharmacyResultsScreen({super.key});
+  final String searchQuery;
+  final String searchType;
+
+  const PharmacyResultsScreen({
+    super.key,
+    required this.searchQuery,
+    required this.searchType,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => PharmacyCubit()..loadPharmacies(),
+  create: (_) => PharmacyCubit()..loadPharmacies(searchQuery: searchQuery),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,

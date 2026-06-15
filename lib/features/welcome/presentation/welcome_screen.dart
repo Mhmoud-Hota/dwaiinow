@@ -32,7 +32,8 @@ class WelcomeScreen extends StatelessWidget {
               left: -20.w,
               child: Opacity(
                 opacity: 0.1,
-                child: Icon(Icons.show_chart, size: 200.sp, color: Colors.white),
+                child:
+                    Icon(Icons.show_chart, size: 200.sp, color: Colors.white),
               ),
             ),
             Positioned(
@@ -40,10 +41,11 @@ class WelcomeScreen extends StatelessWidget {
               right: -20.w,
               child: Opacity(
                 opacity: 0.1,
-                child: Icon(Icons.medication, size: 250.sp, color: Colors.white),
+                child:
+                    Icon(Icons.medication, size: 250.sp, color: Colors.white),
               ),
             ),
-            
+
             // Main Content
             SafeArea(
               child: Padding(
@@ -52,7 +54,7 @@ class WelcomeScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Spacer(flex: 2),
-                    
+
                     // Logo Container
                     Container(
                       padding: EdgeInsets.all(20.w),
@@ -66,9 +68,9 @@ class WelcomeScreen extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    
+
                     SizedBox(height: 40.h),
-                    
+
                     // Title
                     Text(
                       'دوائي الآن',
@@ -79,9 +81,9 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    
+
                     SizedBox(height: 16.h),
-                    
+
                     // Subtitle
                     Text(
                       'رفيقك الذكي للوصول إلى الدواء في أقرب صيدلية، بكل سهولة ودقة.',
@@ -93,9 +95,9 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    
+
                     const Spacer(flex: 3),
-                    
+
                     // Button
                     SizedBox(
                       width: double.infinity,
@@ -132,7 +134,7 @@ class WelcomeScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    
+
                     SizedBox(height: 40.h),
                   ],
                 ),

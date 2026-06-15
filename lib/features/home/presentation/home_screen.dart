@@ -1,250 +1,21 @@
-// //lib/features/home/presentation/home_screen.dart
-// import 'package:flutter/material.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:flutter_screenutil/flutter_screenutil.dart';
-// import 'package:google_fonts/google_fonts.dart';
-
-// import '../../../core/theme/app_colors.dart';
-// import 'cubit/home_cubit.dart';
-
-// class HomeScreen extends StatelessWidget {
-//   HomeScreen({super.key});
-
-//   final TextEditingController _searchController = TextEditingController();
-
-//   final List<String> keywords = [
-//     'مسكنات',
-//     'فيتامينات',
-//     'مضادات',
-//     'برد',
-//     'ضغط',
-//     'سكر',
-//   ];
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocListener<HomeCubit, HomeState>(
-//       listener: (context, state) {
-//   if (state is HomeSearchByName ||
-//       state is HomeSearchByKeyword ||
-//       state is HomeSearchByImage) {
-//     //TODO later
-//   }
-// },
-
-//       child: Scaffold(
-//         body: SingleChildScrollView(
-//           child: Column(
-//             children: [
-//               _buildHeader(),
-//               SizedBox(height: 24.h),
-
-//               // 1️⃣ البحث باسم الدواء
-//               _buildSearchByName(context),
-
-//               SizedBox(height: 20.h),
-
-//               // 2️⃣ البحث بالروشتة
-//               _buildSearchByImage(context),
-
-//               SizedBox(height: 24.h),
-
-//               // 3️⃣ البحث بالكلمات المفتاحية
-//               _buildKeywords(context),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   // ================= HEADER =================
-//   Widget _buildHeader() {
-//     return Container(
-//       width: double.infinity,
-//       padding: EdgeInsets.all(24.w),
-//       decoration: const BoxDecoration(
-//         gradient: LinearGradient(
-//           begin: Alignment.topCenter,
-//           end: Alignment.bottomCenter,
-//           colors: [
-//             AppColors.backgroundGradientStart,
-//             AppColors.backgroundGradientEnd,
-//           ],
-//         ),
-//         borderRadius: BorderRadius.vertical(
-//           bottom: Radius.circular(24),
-//         ),
-//       ),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.end,
-//         children: [
-//           Text(
-//             'مرحباً بك،\nأحمد محمد',
-//             textAlign: TextAlign.right,
-//             style: GoogleFonts.cairo(
-//               fontSize: 22.sp,
-//               fontWeight: FontWeight.bold,
-//               color: Colors.white,
-//             ),
-//           ),
-//           SizedBox(height: 12.h),
-//           Text(
-//             'عن أي دواء تبحث اليوم؟',
-//             textAlign: TextAlign.right,
-//             style: GoogleFonts.cairo(
-//               fontSize: 18.sp,
-//               color: Colors.white.withOpacity(0.9),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-
-//   // ================= SEARCH BY NAME =================
-//   Widget _buildSearchByName(BuildContext context) {
-//     return Padding(
-//       padding: EdgeInsets.symmetric(horizontal: 20.w),
-//       child: Column(
-//         children: [
-//           TextField(
-//             controller: _searchController,
-//             textAlign: TextAlign.right,
-//             decoration: InputDecoration(
-//               hintText: 'اكتب اسم الدواء (مثال: بنادول)',
-//               prefixIcon: const Icon(Icons.search),
-//               filled: true,
-//               fillColor: Colors.white,
-//               border: OutlineInputBorder(
-//                 borderRadius: BorderRadius.circular(16.r),
-//                 borderSide: BorderSide.none,
-//               ),
-//             ),
-//           ),
-//           SizedBox(height: 12.h),
-//           SizedBox(
-//             width: double.infinity,
-//             height: 50.h,
-//             child: ElevatedButton(
-//               onPressed: () {
-//                 context.read<HomeCubit>().searchByName(
-//                       _searchController.text,
-//                     );
-//               },
-//               style: ElevatedButton.styleFrom(
-//                 backgroundColor: AppColors.backgroundGradientStart,
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(16.r),
-//                 ),
-//               ),
-//               child: Text(
-//                 'بحث',
-//                 style: GoogleFonts.cairo(
-//                   fontSize: 16.sp,
-//                   color: Colors.white,
-//                 ),
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-
-//   // ================= SEARCH BY IMAGE =================
-//   Widget _buildSearchByImage(BuildContext context) {
-//     return Padding(
-//       padding: EdgeInsets.symmetric(horizontal: 20.w),
-//       child: InkWell(
-//         onTap: () {
-//           context.read<HomeCubit>().searchByImage();
-//         },
-//         child: Container(
-//           padding: EdgeInsets.all(24.w),
-//           decoration: BoxDecoration(
-//             gradient: const LinearGradient(
-//               colors: [
-//                 AppColors.backgroundGradientStart,
-//                 AppColors.backgroundGradientEnd,
-//               ],
-//             ),
-//             borderRadius: BorderRadius.circular(20.r),
-//           ),
-//           child: Column(
-//             children: [
-//               const Icon(Icons.camera_alt, color: Colors.white, size: 40),
-//               SizedBox(height: 12.h),
-//               Text(
-//                 'تصوير الروشتة',
-//                 style: GoogleFonts.cairo(
-//                   fontSize: 18.sp,
-//                   fontWeight: FontWeight.bold,
-//                   color: Colors.white,
-//                 ),
-//               ),
-//               SizedBox(height: 6.h),
-//               Text(
-//                 'قم بتصوير الروشتة وسنبحث عن الأدوية تلقائياً',
-//                 textAlign: TextAlign.center,
-//                 style: GoogleFonts.cairo(
-//                   fontSize: 14.sp,
-//                   color: Colors.white.withOpacity(0.9),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   // ================= KEYWORDS =================
-//   Widget _buildKeywords(BuildContext context) {
-//     return Padding(
-//       padding: EdgeInsets.symmetric(horizontal: 20.w),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.end,
-//         children: [
-//           Text(
-//             'الأكثر طلباً',
-//             style: GoogleFonts.cairo(
-//               fontSize: 18.sp,
-//               fontWeight: FontWeight.bold,
-//             ),
-//           ),
-//           SizedBox(height: 12.h),
-//           Wrap(
-//             spacing: 12.w,
-//             runSpacing: 12.h,
-//             children: keywords.map((keyword) {
-//               return ChoiceChip(
-//                 label: Text(keyword, style: GoogleFonts.cairo()),
-//                 selected: false,
-//                 onSelected: (_) {
-//                   context.read<HomeCubit>().searchByKeyword(keyword);
-//                 },
-//               );
-//             }).toList(),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../core/theme/app_colors.dart';
-import 'cubit/home_cubit.dart';
 
-class HomeScreen extends StatelessWidget {
-  HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final ImagePicker _picker = ImagePicker();
 
   final List<String> keywords = [
     'مسكنات',
@@ -256,73 +27,62 @@ class HomeScreen extends StatelessWidget {
   ];
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _capturePrescription() async {
+    final XFile? image = await _picker.pickImage(
+      source: ImageSource.camera,
+      imageQuality: 80,
+    );
+
+    if (image == null) return;
+
+    if (!mounted) return;
+
+    context.push('/pharmacies', extra: {
+      'searchQuery': 'روشتة مصورة',
+      'searchType': 'image',
+      'imagePath': image.path,
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocListener<HomeCubit, HomeState>(
-      listener: (context, state) {
-       if (state is HomeSearchByName) {
-          // التنقل إلى شاشة نتائج البحث
-          context.go('/pharmacies', extra: {
-            'searchQuery': state.query,
-            'searchType': 'name',
-          });
-        }
-        if (state is HomeSearchByKeyword) {
-          // التنقل إلى شاشة نتائج البحث
-          context.go('/pharmacies', extra: {
-            'searchQuery': state.keyword,
-            'searchType': 'keyword',
-          });
-        }
-        if (state is HomeSearchByImage) {
-          // TODO: يمكن إضافة منطق لتصوير الروشتة هنا
-          // ثم التنقل لشاشة النتائج
-          context.go('/pharmacies', extra: {
-            'searchQuery': 'روشتة مصورة',
-            'searchType': 'image',
-          });
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor:      AppColors.backgroundGradientStart,
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          title: Text(
-            'الرئيسية',
-            style: GoogleFonts.cairo(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: AppColors.backgroundGradientStart,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        title: Text(
+          'الرئيسية',
+          style: GoogleFonts.cairo(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.person, color: Colors.white),
-              onPressed: () {
-                context.go('/profile');
-              },
-            ),
-          ],
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              _buildHeader(),
-              SizedBox(height: 24.h),
-
-              // 1️⃣ البحث باسم الدواء
-              _buildSearchByName(context),
-
-              SizedBox(height: 20.h),
-
-              // 2️⃣ البحث بالروشتة
-              _buildSearchByImage(context),
-
-              SizedBox(height: 24.h),
-
-              // 3️⃣ البحث بالكلمات المفتاحية
-              _buildKeywords(context),
-            ],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person, color: Colors.white),
+            onPressed: () {
+              context.push('/profile');
+            },
           ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildHeader(),
+            SizedBox(height: 24.h),
+            _buildSearchByName(context),
+            SizedBox(height: 20.h),
+            _buildSearchByImage(context),
+            SizedBox(height: 24.h),
+            _buildKeywords(context),
+          ],
         ),
       ),
     );
@@ -365,7 +125,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildSearchByName(BuildContext context) {
     return Container(
-      color:const Color(0xFFF5F5F5),
+      color: const Color(0xFFF5F5F5),
       child: Directionality(
         textDirection: TextDirection.rtl,
         child: Padding(
@@ -376,10 +136,10 @@ class HomeScreen extends StatelessWidget {
                 controller: _searchController,
                 textAlign: TextAlign.right,
                 decoration: InputDecoration(
-                  hintText: 'اكتب اسم الدواء',
+                  hintText: ' flutab , ferpodes , ... ',
                   prefixIcon: const Icon(Icons.search),
                   filled: true,
-                  fillColor: const Color.fromARGB(255, 255, 255, 255),
+                  fillColor: Colors.white,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(16.r),
                     borderSide: BorderSide.none,
@@ -392,9 +152,10 @@ class HomeScreen extends StatelessWidget {
                 height: 50.h,
                 child: ElevatedButton(
                   onPressed: () {
-                    context.read<HomeCubit>().searchByName(
-                      _searchController.text,
-                    );
+                    context.push('/pharmacies', extra: {
+                      'searchQuery': _searchController.text,
+                      'searchType': 'name',
+                    });
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.backgroundGradientStart,
@@ -422,9 +183,7 @@ class HomeScreen extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w),
       child: InkWell(
-        onTap: () {
-          context.read<HomeCubit>().searchByImage();
-        },
+        onTap: _capturePrescription,
         child: Container(
           padding: EdgeInsets.all(24.w),
           decoration: BoxDecoration(
@@ -441,7 +200,7 @@ class HomeScreen extends StatelessWidget {
               const Icon(Icons.camera_alt, color: Colors.white, size: 40),
               SizedBox(height: 12.h),
               Text(
-                'تصوير الروشتة',
+                'تصوير الروشتة او الدواء',
                 style: GoogleFonts.cairo(
                   fontSize: 18.sp,
                   fontWeight: FontWeight.bold,
@@ -450,7 +209,7 @@ class HomeScreen extends StatelessWidget {
               ),
               SizedBox(height: 6.h),
               Text(
-                'قم بتصوير الروشتة وسنبحث عن الأدوية تلقائياً',
+                'قم بتصوير الروشتة او الدواء ثم سنعرض لك الصيدليات',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.cairo(
                   fontSize: 14.sp,
@@ -464,7 +223,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
- Widget _buildKeywords(BuildContext context) {
+  Widget _buildKeywords(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -498,24 +257,23 @@ class HomeScreen extends StatelessWidget {
         ),
         SizedBox(height: 16.h),
         SizedBox(
-          height: 60.h, // ارتفاع ثابت للسطر
+          height: 60.h,
           child: Directionality(
             textDirection: TextDirection.rtl,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              reverse: true, // لجعل السكرول يبدأ من اليمين
-              shrinkWrap: true,
+              reverse: true,
               itemCount: keywords.length,
               itemBuilder: (context, index) {
                 final keyword = keywords[index];
                 return Container(
-                  margin: EdgeInsets.only(
-                    left: index == 0 ? 0 : 10.w, // مسافة بين الأزرار
-                    right: index == keywords.length - 1 ? 0 : 0,
-                  ),
+                  margin: EdgeInsets.only(left: index == 0 ? 0 : 10.w),
                   child: InkWell(
                     onTap: () {
-                      context.read<HomeCubit>().searchByKeyword(keyword);
+                      context.push('/pharmacies', extra: {
+                        'searchQuery': keyword,
+                        'searchType': 'keyword',
+                      });
                     },
                     borderRadius: BorderRadius.circular(12.r),
                     child: Container(

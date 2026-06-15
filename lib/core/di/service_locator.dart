@@ -1,7 +1,7 @@
 import 'package:get_it/get_it.dart';
-import 'package:dawai_app/core/services/firebase_service.dart';
 import 'package:dawai_app/core/services/auth_service.dart';
-import 'package:dawai_app/core/services/storage_service.dart' as core_storage;
+import 'package:dawai_app/core/services/storage_service.dart';
+
 import 'package:dawai_app/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:dawai_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:dawai_app/features/auth/domain/usecases/login_usecase.dart';
@@ -14,10 +14,12 @@ final GetIt sl = GetIt.instance;
 
 Future<void> init() async {
   // Services
-  sl.registerLazySingleton(() => FirebaseService());
   sl.registerLazySingleton(() => AuthService());
-  sl.registerLazySingleton(() => core_storage.StorageService());
-  
+  sl.registerLazySingleton(() => StorageService());
+
+  // لازم تهيئة SharedPreferences قبل الاستخدام
+  await sl<StorageService>().init();
+
   // Repositories
   sl.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
@@ -25,16 +27,16 @@ Future<void> init() async {
       storageService: sl(),
     ),
   );
-  
+
   // Use Cases
   sl.registerLazySingleton(() => LoginUseCase(repository: sl()));
   sl.registerLazySingleton(() => RegisterUseCase(repository: sl()));
-  
+
   // Cubits
   sl.registerFactory(() => WelcomeCubit());
   sl.registerFactory(() => AuthCubit(
-    loginUseCase: sl(),
-    registerUseCase: sl(),
-  ));
+        loginUseCase: sl(),
+        registerUseCase: sl(),
+      ));
   sl.registerFactory(() => HomeCubit());
 }

@@ -1,10 +1,12 @@
 //lib/features/auth/presentation/pages/login_screen.dart
+import 'package:dawai_app/core/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
 import '../cubit/auth_cubit.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -18,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
+        // تستخدم لتنظيف الزاكره عند اغلاق الصفحه 
     _phoneController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -41,59 +44,68 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: const Color(0xFFE0F2F1),
                   borderRadius: BorderRadius.circular(20.r),
                 ),
-                child: Icon(Icons.person_outline, size: 40.sp, color: const Color(0xFF006D5B)),
+                child: Icon(Icons.person_outline,
+                    size: 40.sp, color: const Color(0xFF006D5B)),
               ),
-              
+
               SizedBox(height: 32.h),
-              
+
               // العنوان
               Text(
                 'تسجيل الدخول',
-                style: GoogleFonts.cairo(fontSize: 28.sp, fontWeight: FontWeight.bold, color: const Color(0xFF1A237E)),
+                style: GoogleFonts.cairo(
+                    fontSize: 28.sp,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF1A237E)),
               ),
-              
+
               SizedBox(height: 8.h),
-              
+
               // النص الفرعي
               Text(
                 'أدخل بياناتك للمتابعة',
-                style: GoogleFonts.cairo(fontSize: 16.sp, color: Colors.grey[600]),
+                style:
+                    GoogleFonts.cairo(fontSize: 16.sp, color: Colors.grey[600]),
               ),
-              
+
               SizedBox(height: 48.h),
-              
+
               // حقل رقم الهاتف
-              _buildTextField(
+              AppTextField(
                 controller: _phoneController,
                 hint: 'رقم الهاتف',
                 icon: Icons.phone_android,
                 keyboardType: TextInputType.phone,
               ),
-              
+
               SizedBox(height: 20.h),
-              
+
               // حقل كلمة المرور
-              _buildTextField(
+              AppTextField(
                 controller: _passwordController,
                 hint: 'كلمة المرور',
                 icon: Icons.lock_outline,
                 isPassword: true,
               ),
-              
+
               SizedBox(height: 40.h),
-              
+
               // زر الدخول المرتبط بـ Cubit
               BlocConsumer<AuthCubit, AuthState>(
                 listener: (context, state) {
                   if (state is AuthSuccess) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('تم تسجيل الدخول بنجاح'), backgroundColor: Colors.green),
+                      const SnackBar(
+                          content: Text('تم تسجيل الدخول بنجاح'),
+                          backgroundColor: Colors.green),
                     );
                     // التنقل إلى الشاشة الرئيسية باستخدام GoRouter
                     context.go('/home');
                   } else if (state is AuthError) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+                      SnackBar(
+                          content: Text(state.message),
+                          backgroundColor: Colors.red),
                     );
                   }
                 },
@@ -103,16 +115,22 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 56.h,
                     child: ElevatedButton(
                       onPressed: state is AuthLoading
-                        ? null 
-                        : () => context.read<AuthCubit>().login(_phoneController.text, _passwordController.text),
+                          ? null
+                          : () => context.read<AuthCubit>().login(
+                              _phoneController.text, _passwordController.text),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF006D5B),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12.r)),
                         elevation: 0,
                       ),
                       child: state is AuthLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : Text('دخول', style: GoogleFonts.cairo(fontSize: 18.sp, fontWeight: FontWeight.bold, color: Colors.white)),
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : Text('دخول',
+                              style: GoogleFonts.cairo(
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
                     ),
                   );
                 },
@@ -124,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: TextButton(
                   onPressed: () {
                     // انتقل لشاشة استعادة كلمة المرور
-                    context.go('/forgot-password');
+                    context.push('/forgot-password');
                   },
                   child: Text(
                     'نسيت كلمة المرور؟',
@@ -153,7 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextButton(
                     onPressed: () {
                       // الانتقال إلى شاشة التسجيل
-                      context.go('/register');
+                      context.push('/register');
                     },
                     child: Text(
                       'إنشاء حساب جديد',
@@ -166,7 +184,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
-
             ],
           ),
         ),
@@ -174,32 +191,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hint,
-    required IconData icon,
-    bool isPassword = false,
-    TextInputType keyboardType = TextInputType.text,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: Colors.grey[200]!),
-      ),
-      child: TextField(
-        controller: controller,
-        obscureText: isPassword,
-        keyboardType: keyboardType,
-        textAlign: TextAlign.right,
-        decoration: InputDecoration(
-          hintText: hint,
-          hintStyle: GoogleFonts.cairo(color: Colors.grey[400], fontSize: 14.sp),
-          prefixIcon: Icon(icon, color: Colors.grey[400], size: 22.sp),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-        ),
-      ),
-    );
-  }
 }

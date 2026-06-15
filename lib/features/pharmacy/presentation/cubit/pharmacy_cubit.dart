@@ -1,4 +1,42 @@
-//lib/features/pharmacy/presentation/cubit/pharmacy_cubit.dart
+// import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:dawai_app/core/services/location_service.dart';
+// import 'package:dawai_app/features/pharmacy/data/repositories/pharmacy_repository.dart';
+// import 'package:dawai_app/features/pharmacy/data/models/pharmacy_model.dart';
+
+// part 'pharmacy_state.dart';
+
+// class PharmacyCubit extends Cubit<PharmacyState> {
+//   final PharmacyRepository repo;
+//   final LocationService location;
+
+//   PharmacyCubit({
+//     required this.repo,
+//     required this.location,
+//   }) : super(PharmacyInitial());
+
+//   Future<void> loadPharmacies({required String searchQuery}) async {
+//     if (searchQuery.trim().isEmpty) {
+//       emit(PharmacyError('يرجى إدخال اسم الدواء'));
+//       return;
+//     }
+
+//     emit(PharmacyLoading());
+//     try {
+//       final pos = await location.getCurrentPosition();
+
+//       final pharmacies = await repo.searchNearestPharmacies(
+//         query: searchQuery.trim(),
+//         lat: pos.latitude,
+//         lng: pos.longitude,
+//       );
+
+//       emit(PharmacyLoaded(pharmacies));
+//     } catch (e) {
+//       emit(PharmacyError(e.toString().replaceAll('Exception: ', '')));
+//     }
+//   }
+// }
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'pharmacy_state.dart';
@@ -26,13 +64,11 @@ class Pharmacy {
 class PharmacyCubit extends Cubit<PharmacyState> {
   PharmacyCubit() : super(PharmacyInitial());
 
-  Future<void> loadPharmacies() async {
+  Future<void> loadPharmacies({required String searchQuery}) async {
     emit(PharmacyLoading());
-    
     try {
-      // محاكاة جلب البيانات من API
       await Future.delayed(const Duration(seconds: 1));
-      
+
       final pharmacies = [
         Pharmacy(
           id: '1',
@@ -54,15 +90,6 @@ class PharmacyCubit extends Cubit<PharmacyState> {
         ),
         Pharmacy(
           id: '3',
-          name: 'صيدلية الحياة',
-          distance: '2.0',
-          phone: '+249111222333',
-          latitude: 15.4,
-          longitude: 32.4,
-          isAvailable: true,
-        ),
-        Pharmacy(
-          id: '4',
           name: 'صيدلية الأمل',
           distance: '3.5',
           phone: '+249444555666',
@@ -71,20 +98,18 @@ class PharmacyCubit extends Cubit<PharmacyState> {
           isAvailable: false,
         ),
       ];
-      
+
       emit(PharmacyLoaded(pharmacies));
-    } catch (e) {
+    } catch (_) {
       emit(PharmacyError('حدث خطأ في جلب البيانات'));
     }
   }
 
   void callPharmacy(Pharmacy pharmacy) {
-    // TODO: Implement call functionality
-    // يمكن استخدام package مثل url_launcher للاتصال
+    // لاحقاً url_launcher
   }
 
   void openLocation(Pharmacy pharmacy) {
-    // TODO: Implement open map functionality
-    // يمكن استخدام package مثل url_launcher لفتح خرائط جوجل
+    // لاحقاً url_launcher
   }
 }

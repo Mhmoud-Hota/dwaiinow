@@ -17,6 +17,6 @@ class StorageException extends AppException {
 }
 
 class NetworkException extends AppException {
-  NetworkException({required String message}) : super(message);
+  NetworkException(String s, {required String message}) : super(message);
 }
 
