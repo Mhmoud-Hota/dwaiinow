@@ -1,27 +1,16 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:firebase_core/firebase_core.dart';
-
 import 'core/di/service_locator.dart' as di;
 import 'config/routes/app_router.dart';
-import 'features/welcome/presentation/cubit/welcome_cubit.dart'; 
+import 'features/welcome/presentation/cubit/welcome_cubit.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/home/presentation/cubit/home_cubit.dart';
-import 'firebase_options.dart';
+import 'features/splash/presentation/cubit/splash_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  
-  // Initialize dependencies
   await di.init();
-  
   runApp(const DawaiApp());
 }
 
@@ -37,6 +26,7 @@ class DawaiApp extends StatelessWidget {
       builder: (context, child) {
         return MultiBlocProvider(
           providers: [
+            BlocProvider(create: (_) => di.sl<SplashCubit>()),
             BlocProvider(create: (_) => di.sl<WelcomeCubit>()),
             BlocProvider(create: (_) => di.sl<AuthCubit>()),
             BlocProvider(create: (_) => di.sl<HomeCubit>()),
@@ -44,10 +34,7 @@ class DawaiApp extends StatelessWidget {
           child: MaterialApp.router(
             title: 'Dawai App',
             debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              primarySwatch: Colors.teal,
-              useMaterial3: true,
-            ),
+            theme: ThemeData(primarySwatch: Colors.teal, useMaterial3: true),
             routerConfig: AppRouter.router,
           ),
         );

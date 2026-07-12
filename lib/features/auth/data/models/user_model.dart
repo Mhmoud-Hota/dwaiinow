@@ -1,5 +1,5 @@
-//lib/features/auth/data/models/user_model.dart
-import 'package:cloud_firestore/cloud_firestore.dart';
+// lib/features/auth/data/models/user_model.dart
+
 import '../../domain/entities/user_entity.dart';
 
 class UserModel extends UserEntity {
@@ -9,28 +9,29 @@ class UserModel extends UserEntity {
     required super.phoneNumber,
     super.profileImageUrl,
     super.address,
+    required super.isVerified,
     required super.createdAt,
   });
 
-  factory UserModel.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+  factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: doc.id,
-      name: data['name'] ?? '',
-      phoneNumber: data['phoneNumber'] ?? '',
-      profileImageUrl: data['profileImageUrl'],
-      address: data['address'],
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      id:             json['id'].toString(),
+      name:           json['name'] ?? '',
+      phoneNumber:    json['phone'] ?? '',          // NestJS يُرجع 'phone' وليس 'phone_number'
+      profileImageUrl: null,                        // NestJS لا يُرجعها حالياً
+      address:        null,                         // NestJS لا يُرجعها حالياً
+      isVerified:     json['is_verified'] ?? false,
+      createdAt:      json['created_at'] != null
+          ? DateTime.tryParse(json['created_at']) ?? DateTime.now()
+          : DateTime.now(),
     );
   }
-Map<String, dynamic> toMap() {
-  return {
-    'id': id, // أضف الـ ID هنا ليتم حفظه
-    'name': name,
-    'phoneNumber': phoneNumber,
-    'profileImageUrl': profileImageUrl,
-    'address': address,
-    'createdAt': createdAt.toIso8601String(), // تحويل التاريخ لنص ISO
+
+  Map<String, dynamic> toMap() => {
+    'id':          id,
+    'name':        name,
+    'phone':       phoneNumber,
+    'is_verified': isVerified,
+    'created_at':  createdAt.toIso8601String(),
   };
-}
 }

@@ -1,11 +1,10 @@
-
 // lib/core/network/api_client.dart
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dawai_app/core/errors/exceptions.dart';
-import '../../config/constants/api_constants.dart';
+import '../../config/constants/constants.dart';
 
 class ApiClient {
   final Dio _dio;
@@ -25,22 +24,26 @@ class ApiClient {
   void _init() {
     _dio.options = BaseOptions(
       baseUrl: ApiConstants.baseUrl,
-      connectTimeout: const Duration(seconds: 30),
-      receiveTimeout: const Duration(seconds: 30),
+      connectTimeout: const Duration(
+        milliseconds: AppConstants.connectTimeoutMs,
+      ),
+      receiveTimeout: const Duration(
+        milliseconds: AppConstants.receiveTimeoutMs,
+      ),
       headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Accept-Language': 'ar',
+        ApiHeaders.contentType: ApiConstants.contentTypeJson,
+        ApiHeaders.accept: ApiConstants.contentTypeJson,
+        ApiHeaders.acceptLanguage: AppConstants.defaultLanguage,
       },
       validateStatus: (status) => true,
     );
 
     _refreshDio = Dio(
       BaseOptions(
-        baseUrl: ApiConstants.refUrl, // ✅ مهم لو refUrl نسبي
+        baseUrl: ApiConstants.refUrl,
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          ApiHeaders.contentType: ApiConstants.contentTypeJson,
+          ApiHeaders.accept: ApiConstants.contentTypeJson,
         },
         validateStatus: (status) => true,
       ),
@@ -61,7 +64,7 @@ class ApiClient {
             final token = await _storage.read(key: ApiConstants.accessTokenKey);
             if (token != null && token.isNotEmpty) {
               debugPrint('✅ Access token attached');
-              options.headers['Authorization'] = 'Bearer $token';
+              options.headers[ApiHeaders.authorization] = 'Bearer $token';
             } else {
               debugPrint('⚠️ No access token found');
             }
@@ -125,7 +128,7 @@ class ApiClient {
               );
 
               if (newToken != null && newToken.isNotEmpty) {
-                opts.headers['Authorization'] = 'Bearer $newToken';
+                opts.headers[ApiHeaders.authorization] = 'Bearer $newToken';
 
                 try {
                   final clonedResponse = await _dio.fetch(opts);
@@ -168,13 +171,11 @@ class ApiClient {
 
   bool _isAuthFreeEndpoint(RequestOptions options) {
     final p = options.path;
-    // لو تستخدم URLs كاملة أحياناً:
     final uriPath = options.uri.path;
 
-    return p.contains(ApiConstants.loginEndpoint) ||
-        p.contains(ApiConstants.registerEndpoint) ||
-        p.contains(ApiConstants.refreshTokenEndpoint) ||
-        uriPath.contains(ApiConstants.refreshTokenEndpoint);
+    return AuthConstants.authFreeEndpoints.any(
+      (endpoint) => p.contains(endpoint) || uriPath.contains(endpoint),
+    );
   }
 
   Future<void> _preemptiveTokenRefresh() async {
@@ -187,12 +188,17 @@ class ApiClient {
       int.parse(issuedAtStr),
     );
     final expiresAt = issuedAt.add(
-      const Duration(minutes: ApiConstants.tokenLifetimeMinutes),
+      const Duration(
+        minutes: AuthConstants.tokenLifetimeMinutes,
+      ),
     );
     final remaining = expiresAt.difference(DateTime.now());
     debugPrint('⏳ Token remaining: ${remaining.inSeconds} seconds');
 
-    if (remaining <= const Duration(minutes: 3)) {
+    if (remaining <=
+        const Duration(
+          seconds: AuthConstants.refreshBeforeExpirySeconds,
+        )) {
       debugPrint("referesh token ends time#$remaining");
       await _refreshToken();
     }
@@ -225,7 +231,7 @@ class ApiClient {
       }
 
       final response = await _refreshDio.post(
-        ApiConstants
+        AuthConstants
             .refreshTokenEndpoint, // ✅ الأفضل endpoint وليس refUrl لو متاح
         data: {'refresh': refreshToken},
       );
@@ -278,7 +284,6 @@ class ApiClient {
       _isRefreshing = false;
     }
   }
-
   // داخل ApiClient
   Future<String?> getValidAccessToken() async {
     await _preemptiveTokenRefresh(); // يجرّب refresh لو قرب ينتهي

@@ -1,82 +1,73 @@
-//lib/core/services/storage_service.dart
+// lib/core/services/storage_service.dart
+
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dawai_app/features/auth/data/models/user_model.dart';
 
 class StorageService {
-  static const String _userKey = 'current_user';
+  static const String _userKey          = 'current_user';
   static const String _isFirstLaunchKey = 'is_first_launch';
-  
+
   late SharedPreferences _preferences;
 
   Future<void> init() async {
     _preferences = await SharedPreferences.getInstance();
   }
 
-  // حفظ بيانات المستخدم
+  // ── حفظ المستخدم ───────────────────────────────────────────────────────────
   Future<void> saveUser(UserModel user) async {
-    final userJson = jsonEncode(user.toMap());
-    await _preferences.setString(_userKey, userJson);
+    // toMap() يُرجع: { id, name, phone, is_verified, created_at }
+    await _preferences.setString(_userKey, jsonEncode(user.toMap()));
   }
 
-  // جلب بيانات المستخدم
-   Future<UserModel?> getUser() async {
+  // ── جلب المستخدم (async) ───────────────────────────────────────────────────
+  Future<UserModel?> getUser() async {
+    return _parseUser();
+  }
+
+  // ── جلب المستخدم (sync) ────────────────────────────────────────────────────
+  UserModel? getUserSync() {
+    return _parseUser();
+  }
+
+  // ── parser مشترك — مفتاح واحد لكلا الدالتين ──────────────────────────────
+  UserModel? _parseUser() {
     try {
-      final userJson = _preferences.getString(_userKey);
-      if (userJson == null) return null;
-      
-      final userMap = jsonDecode(userJson) as Map<String, dynamic>;
+      final raw = _preferences.getString(_userKey);
+      if (raw == null) return null;
+
+      final map = jsonDecode(raw) as Map<String, dynamic>;
+
       return UserModel(
-        id: userMap['id'] ?? '', // تأكد من إضافة الـ ID عند الحفظ
-        name: userMap['name'] ?? '',
-        phoneNumber: userMap['phoneNumber'] ?? '',
-        profileImageUrl: userMap['profileImageUrl'],
-        address: userMap['address'],
-        createdAt: userMap['createdAt'] != null 
-            ? DateTime.tryParse(userMap['createdAt']) ?? DateTime.now()
+        id:             map['id']?.toString()         ?? '',
+        name:           map['name']?.toString()       ?? '',
+        phoneNumber:    map['phone']?.toString()      ?? '', // 'phone' كما يُرجع NestJS
+        isVerified:     map['is_verified'] as bool?   ?? false,
+        profileImageUrl: map['profile_image_url'] as String?,
+        address:        map['address'] as String?,
+        createdAt:      map['created_at'] != null
+            ? DateTime.tryParse(map['created_at'].toString()) ?? DateTime.now()
             : DateTime.now(),
       );
-    } catch (e) {
+    } catch (_) {
       return null;
     }
   }
 
-
-  // جلب بيانات المستخدم بشكل متزامن
-  UserModel? getUserSync() {
-    try {
-      final userJson = _preferences.getString(_userKey);
-      if (userJson == null) return null;
-      
-      final userMap = jsonDecode(userJson) as Map<String, dynamic>;
-      return UserModel(
-        id: userMap['id'] ?? '',
-        name: userMap['name'] ?? '',
-        phoneNumber: userMap['phoneNumber'] ?? '',
-        profileImageUrl: userMap['profileImageUrl'],
-        address: userMap['address'],
-        createdAt: DateTime.parse(userMap['createdAt'] ?? DateTime.now().toString()),
-      );
-    } catch (e) {
-      return null;
-    }
-  }
-
-  // مسح بيانات المستخدم
+  // ── مسح المستخدم ───────────────────────────────────────────────────────────
   Future<void> clearUser() async {
     await _preferences.remove(_userKey);
   }
 
-  // التحقق من أول تشغيل للتطبيق
-  bool get isFirstLaunch {
-    return _preferences.getBool(_isFirstLaunchKey) ?? true;
-  }
+  // ── أول تشغيل ──────────────────────────────────────────────────────────────
+  bool get isFirstLaunch =>
+      _preferences.getBool(_isFirstLaunchKey) ?? true;
 
   Future<void> setFirstLaunchCompleted() async {
     await _preferences.setBool(_isFirstLaunchKey, false);
   }
 
-  // تنظيف جميع البيانات المحفوظة
+  // ── مسح الكل ───────────────────────────────────────────────────────────────
   Future<void> clearAll() async {
     await _preferences.clear();
   }

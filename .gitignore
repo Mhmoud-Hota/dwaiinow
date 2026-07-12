@@ -3,6 +3,7 @@
 *.log
 *.pyc
 *.swp
+*.zip
 .DS_Store
 .atom/
 .build/
@@ -10,6 +11,7 @@
 .history
 .svn/
 .swiftpm/
+.zip
 migrate_working_dir/
 
 # IntelliJ related

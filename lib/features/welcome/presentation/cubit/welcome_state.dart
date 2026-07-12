@@ -5,4 +5,7 @@ abstract class WelcomeState {}
 
 class WelcomeInitial extends WelcomeState {}
 
-class WelcomeNavigateToHome extends WelcomeState {}
+/// أثناء حفظ حالة "تم عرض الترحيب" قبل الانتقال
+class WelcomeLoading extends WelcomeState {}
+
+class WelcomeNavigateToLogin extends WelcomeState {}

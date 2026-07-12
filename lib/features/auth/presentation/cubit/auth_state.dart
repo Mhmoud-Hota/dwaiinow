@@ -1,41 +1,34 @@
-//lib/features/auth/presentation/cubit/auth_state.dart
+// lib/features/auth/presentation/cubit/auth_state.dart
+
 part of 'auth_cubit.dart';
 
 abstract class AuthState {}
 
-class AuthInitial extends AuthState {}
-
-class AuthLoading extends AuthState {}
-
-class AuthLoginSuccess extends AuthState {
-  final UserEntity user;
-  AuthLoginSuccess(this.user);
-}
+class AuthInitial      extends AuthState {}
+class AuthLoading      extends AuthState {}
 
 class AuthSuccess extends AuthState {
   final UserEntity user;
   AuthSuccess(this.user);
 }
 
-class AuthRegisterSuccess extends AuthState {
-  final UserEntity user;
-  AuthRegisterSuccess(this.user);
-}
-
 class AuthOtpRequired extends AuthState {
-  final String verificationId;
-  final String phoneNumber;
-  
+  final String phone;
+  final bool   isLogin;
+  final bool   isReset; // true = نسيت كلمة المرور
   AuthOtpRequired({
-    required this.verificationId,
-    required this.phoneNumber,
+    required this.phone,
+    this.isLogin = false,
+    this.isReset = false,
   });
 }
 
-class AuthOtpVerified extends AuthState {
-  final UserEntity user;
-  AuthOtpVerified(this.user);
+class AuthOtpResent extends AuthState {
+  final String phone;
+  AuthOtpResent({required this.phone});
 }
+
+class AuthPasswordReset extends AuthState {}
 
 class AuthError extends AuthState {
   final String message;

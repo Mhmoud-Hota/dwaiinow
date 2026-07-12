@@ -1,81 +1,78 @@
-//lib/features/auth/data/repositories/auth_repository_impl.dart
+// lib/features/auth/data/repositories/auth_repository_impl.dart
+
 import 'package:dawai_app/core/services/auth_service.dart';
+import 'package:dawai_app/core/services/storage_service.dart';
 import 'package:dawai_app/features/auth/domain/entities/user_entity.dart';
 import 'package:dawai_app/features/auth/domain/repositories/auth_repository.dart';
-import 'package:dawai_app/features/auth/data/models/user_model.dart';
-import 'package:dawai_app/core/services/storage_service.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthService _authService;
+  final AuthService    _authService;
   final StorageService _storageService;
 
   AuthRepositoryImpl({
-    required AuthService authService,
+    required AuthService    authService,
     required StorageService storageService,
-  })  : _authService = authService,
+  })  : _authService    = authService,
         _storageService = storageService;
-
-  @override
-  Future<UserEntity> login(String phoneNumber, String password) async {
-    final user = await _authService.loginWithPhoneAndPassword(
-      phoneNumber: phoneNumber,
-      password: password,
-    );
-    await _storageService.saveUser(user);
-    return user;
-  }
 
   @override
   Future<UserEntity> register({
     required String name,
-    required String phoneNumber,
+    required String phone,
     required String password,
-    String? address,
-    String? profileImageUrl,
+    String? profileImage,
+    String method = 'sms',
   }) async {
-    final user = await _authService.registerWithPhoneAndPassword(
-      name: name,
-      phoneNumber: phoneNumber,
-      password: password,
-      address: address,
-      profileImageUrl: profileImageUrl,
+    final user = await _authService.register(
+      name: name, phone: phone, password: password,
+      profileImage: profileImage,
     );
     await _storageService.saveUser(user);
     return user;
   }
 
   @override
-  Future<void> updateProfile({
-    required String userId,
-    String? name,
-    String? address,
-    String? profileImageUrl,
-  }) async {
-    await _authService.updateUserProfile(
-      userId: userId,
-      name: name,
-      address: address,
-      profileImageUrl: profileImageUrl,
-    );
-
-    final currentUser = await _storageService.getUser();
-    if (currentUser != null) {
-      await _storageService.saveUser(UserModel(
-        id: currentUser.id,
-        name: name ?? currentUser.name,
-        phoneNumber: currentUser.phoneNumber,
-        profileImageUrl: profileImageUrl ?? currentUser.profileImageUrl,
-        address: address ?? currentUser.address,
-        createdAt: currentUser.createdAt,
-      ));
-    }
+  Future<UserEntity> login({required String phone, required String password}) async {
+    final user = await _authService.login(phone: phone, password: password);
+    await _storageService.saveUser(user);
+    return user;
   }
 
   @override
-  UserEntity? getCurrentUser() {
-    // من التخزين المحلي مباشرة (سريع)
-    return _storageService.getUserSync();
+  Future<void> sendOtp({required String phone, String method = 'sms'}) async {
+    await _authService.sendOtp(phone: phone, method: method);
   }
+
+  @override
+  Future<UserEntity> verifyOtp({required String phone, required String otp}) async {
+    final user = await _authService.verifyOtp(phone: phone, otp: otp);
+    await _storageService.saveUser(user);
+    return user;
+  }
+
+  @override
+  Future<void> forgotPassword(String phone) async {
+    await _authService.forgotPassword(phone);
+  }
+
+  @override
+  Future<void> resetPassword({
+    required String phone,
+    required String otp,
+    required String newPassword,
+  }) async {
+    await _authService.resetPassword(phone: phone, otp: otp, newPassword: newPassword);
+  }
+
+  @override
+  Future<UserEntity> refreshMe() async {
+    final user = await _authService.getMe();
+    await _storageService.saveUser(user);
+    return user;
+  }
+
+  @override
+  UserEntity? getCurrentUser() => _storageService.getUserSync();
 
   @override
   Future<void> logout() async {
